@@ -1,0 +1,124 @@
+﻿@page "/filelist"
+
+<h1>Blazor.LocalFiles - File Select List</h1>
+
+<FileSelectList @ref="fileSelectList" IsMultiple="true" FilesSelected="FilesSelectedHandler"></FileSelectList>
+
+<div class="row">
+    <div class="col-sm-6">
+        <div>
+            <button class="btn btn-primary" @onclick="@SelectFiles">Select Files</button>
+        </div>
+        @if (errorMessage != null)
+        {
+
+            <div class="alert alert-warning" role="alert">
+                @errorMessage
+                <button type="button" class="close" aria-label="Close" @onclick="@CloseErrorAlert">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+@if (fileSelectList?.HasSelectedFiles == true)
+{
+    <hr />
+    <table class="table table-condensed table-borderless">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Last Modified</th>
+                <th>Size</th>
+                <th>Is Loaded</th>
+                <th>Loaded Size</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var selectedFile in fileSelectList.SelectedFiles)
+            {
+                var fileLoad = loadFiles[selectedFile.Name];
+                <tr>
+                    <td>@selectedFile.Name</td>
+                    <td>@selectedFile.LastModified.ToLocalTime()</td>
+                    <td>@selectedFile.Size</td>
+                    <td>@fileLoad.IsLoaded</td>
+                    <td>@fileLoad.LoadedSize</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="@(async () => await LoadFile(fileLoad))">Load File</button>
+                        <button class="btn btn-outline-danger" @onclick="@(() => RemoveFile(selectedFile.Name))">Remove File</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code
+{
+    FileSelectList fileSelectList;
+
+    Dictionary<string, LoadFile> loadFiles = new Dictionary<string, LoadFile>(StringComparer.OrdinalIgnoreCase);
+
+    string errorMessage;
+
+    void SelectFiles()
+    {
+        ResetErrorState();
+
+        // Trigger the file selection dialog
+        fileSelectList.SelectFiles();
+    }
+
+    Task FilesSelectedHandler(SelectedFile[] selectedFiles)
+    {
+        var newSelectedFiles = selectedFiles.Select(file => new LoadFile()
+        {
+            SelectedFile = file,
+            IsLoaded = false,
+            LoadedSize = 0
+        }).ToArray();
+
+        foreach(var file in newSelectedFiles)
+        {
+            loadFiles[file.SelectedFile.Name] = file;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    async Task LoadFile(LoadFile file)
+    {
+        try
+        {
+            using (var fileStream = await fileSelectList.OpenFileStreamAsync(file.SelectedFile.Name))
+            {
+                var buffer = new System.IO.MemoryStream();
+                await fileStream.CopyToAsync(buffer);
+                file.IsLoaded = true;
+                file.LoadedSize = (int)buffer.Length;
+            }
+        }
+        catch(Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    void RemoveFile(string fileName)
+    {
+        fileSelectList.RemoveFile(fileName);
+    }
+
+    void CloseErrorAlert()
+    {
+        ResetErrorState();
+    }
+
+    void ResetErrorState()
+    {
+        errorMessage = null;
+    }
+}
