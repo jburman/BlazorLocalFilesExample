@@ -1,15 +1,8 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="sidebar">
-    <NavMenu />
-</div>
-
-<div class="main">
-    <div class="top-row px-4">
-        <a href="https://github.com/jburman/W8lessLabs.Blazor.LocalFiles" target="_blank" class="ml-md-auto">About</a>
-    </div>
-
-    <div class="content px-4">
+<NavMenu />
+<div class="body-container container">
+    <div class="body-content">
         @Body
     </div>
 </div>

@@ -1,35 +1,25 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">Blazor.LocalFiles</a>
-    <button class="navbar-toggler" @onclick=@ToggleNavMenu>
-        <span class="navbar-toggler-icon"></span>
-    </button>
-</div>
+﻿@inject NavigationManager Nav
+@inject ViewState ViewState 
 
-<div class=@(collapseNavMenu ? "collapse" : null) @onclick=@ToggleNavMenu>
-    <ul class="nav flex-column">
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match=NavLinkMatch.All>
-                <span class="oi oi-file" aria-hidden="true"></span> Load File
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="image">
-                <span class="oi oi-image" aria-hidden="true"></span> Load Image
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="filelist">
-                <span class="oi oi-list" aria-hidden="true"></span> File List
-            </NavLink>
-        </li>
+<div class="nav-menu tabs is-large is-fullwidth">
+    <ul>
+        <Tab View="/" Icon="oi-home" TabSelected="TabeSelectedHandler">Home</Tab>
+        <Tab View="file" Icon="oi-file" TabSelected="TabeSelectedHandler">Load File</Tab>
+        <Tab View="image" Icon="oi-image" TabSelected="TabeSelectedHandler">Load Image</Tab>
+        <Tab View="filelist" Icon="oi-list" TabSelected="TabeSelectedHandler">File List</Tab>
     </ul>
 </div>
 
 @functions {
     bool collapseNavMenu = true;
 
+    string currentView = string.Empty;
+
     void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }
+
+    void TabeSelectedHandler(string view) =>
+        ViewState.CurrentView = view;
 }
