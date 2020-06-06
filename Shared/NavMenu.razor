@@ -11,22 +11,15 @@
 </div>
 
 @functions {
-    bool collapseNavMenu = true;
-
-    string currentView = string.Empty;
-
     void TabSelectedHandler(string view) =>
         ViewState.CurrentView = view;
 
     protected override void OnInitialized()
     {
-        var navUri = new Uri(Nav.Uri);
-        string page = navUri.Segments[navUri.Segments.Length - 1];
-        currentView = page switch
+        ViewState.CurrentView = Nav.Uri switch
         {
-            "/" => string.Empty,
-            _ => page
+            _ when Nav.Uri.EndsWith('/') => string.Empty,
+            _ => (new Uri(Nav.Uri)).Segments[^1]
         };
-        ViewState.CurrentView = currentView;
     }
 }
