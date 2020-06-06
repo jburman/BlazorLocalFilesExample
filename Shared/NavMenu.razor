@@ -1,12 +1,12 @@
-﻿@inject NavigationManager Nav
-@inject ViewState ViewState 
+﻿@inject ViewState ViewState
+@inject NavigationManager Nav
 
 <div class="nav-menu tabs is-large is-fullwidth">
     <ul>
-        <Tab View="/" Icon="oi-home" TabSelected="TabeSelectedHandler">Home</Tab>
-        <Tab View="file" Icon="oi-file" TabSelected="TabeSelectedHandler">Load File</Tab>
-        <Tab View="image" Icon="oi-image" TabSelected="TabeSelectedHandler">Load Image</Tab>
-        <Tab View="filelist" Icon="oi-list" TabSelected="TabeSelectedHandler">File List</Tab>
+        <Tab View="" Icon="oi-home" TabSelected="TabSelectedHandler">Home</Tab>
+        <Tab View="file" Icon="oi-file" TabSelected="TabSelectedHandler">Load File</Tab>
+        <Tab View="image" Icon="oi-image" TabSelected="TabSelectedHandler">Load Image</Tab>
+        <Tab View="filelist" Icon="oi-list" TabSelected="TabSelectedHandler">File List</Tab>
     </ul>
 </div>
 
@@ -15,11 +15,18 @@
 
     string currentView = string.Empty;
 
-    void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-
-    void TabeSelectedHandler(string view) =>
+    void TabSelectedHandler(string view) =>
         ViewState.CurrentView = view;
+
+    protected override void OnInitialized()
+    {
+        var navUri = new Uri(Nav.Uri);
+        string page = navUri.Segments[navUri.Segments.Length - 1];
+        currentView = page switch
+        {
+            "/" => string.Empty,
+            _ => page
+        };
+        ViewState.CurrentView = currentView;
+    }
 }

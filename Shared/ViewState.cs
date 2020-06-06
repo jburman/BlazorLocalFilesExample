@@ -2,6 +2,6 @@
 {
     public class ViewState
     {
-        public string CurrentView { get; set; } = "/";
+        public string CurrentView { get; set; } = string.Empty;
     }
 }

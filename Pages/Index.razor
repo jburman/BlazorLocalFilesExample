@@ -2,9 +2,44 @@
 
 
 <section class="section">
-    <h3 class="subtitle">Opening Files in the Browser with Blazor</h3>
+    <h3 class="title is-4">Open Files in the Browser with Blazor</h3>
+    <div class="content">
+        This site provides examples of opening files and images in the web browser and then loading them into a .NET process running inside the browser.
+        The site runs on <a href="https://blazor.net" target="_blank">Blazor Web Assembly</a> and uses a file access component called
+        <a href="https://github.com/jburman/W8lessLabs.Blazor.LocalFiles" target="_blank" class="ml-md-auto">W8lessLabs.Blazor.LocalFiles</a>
+    </div>
+    
+    <h3 class="title is-4">Getting started</h3>
+    <div class="content">
+        <h4 class="title is-5">Add package reference</h4>
+        <pre>&gt; dotnet add package W8lessLabs.Blazor.LocalFiles --version 1.0.0</pre>
+    </div>
+    <div class="content">
+        <h4 class="title is-5">Reference javascript in <b>index.html</b></h4>
+        <pre>&lt;script src="_content/W8lessLabs.Blazor.LocalFiles/js/fileupload.js"&gt;&lt;/script&gt;</pre>
+    </div>
+    <div class="content">
+        <h4 class="title is-5">Add a using reference in your <b>_Imports.razor</b>.</h4>
+        <pre>@@using W8lessLabs.Blazor.LocalFiles</pre>
+    </div>
+    <div class="content">
+        <h4 class="title is-5">Use the component!</h4>
+        <pre>&lt;FileSelect @@ref="fileSelect" FilesChanged="FilesChangedHandler" /&gt;
 
-    This site provides examples of opening files and images in the web browser and then loading them into a .NET process running inside the browser.
-    The site runs on <a href="https://blazor.net" target="_blank">Blazor Web Assembly</a> and uses a file access component called
-    <a href="https://github.com/jburman/W8lessLabs.Blazor.LocalFiles" target="_blank" class="ml-md-auto">W8lessLabs.Blazor.LocalFiles</a>
+&lt;button @@onclick="@@(() => fileSelect.SelectFiles())"&gt;Select Files&lt;/button&gt;
+
+@@code
+{
+    FileSelect fileSelect;
+
+    async Task FilesChangedHandler(FileSelectChangeArgs args)
+    {
+        var file = args.Files.First();
+        using (var fileStream = await args.FileSelect.OpenFileStreamAsync(file.Name))
+        {
+            // do something with file contents ...
+        }
+    }
+}</pre>
+    </div>
 </section>

@@ -1,6 +1,6 @@
 ﻿@inject ViewState ViewState 
 
-<li class="@(ViewState.CurrentView == View ? "is-active" : string.Empty)" @onclick="TabSelectedHandler">
+<li class="@(IsCurrentTab() ? "is-active" : string.Empty)" @onclick="TabSelectedHandler">
     <NavLink href="@View">
         <span class="icon"><i class="oi @Icon" aria-hidden="true"></i></span> @ChildContent
     </NavLink>
@@ -20,9 +20,9 @@
     [Parameter]
     public EventCallback<string> TabSelected { get; set; }
 
-    Task TabSelectedHandler()
-    {
-        return TabSelected.InvokeAsync(View);
-        //ViewState.CurrentView = View;
-    }
+    Task TabSelectedHandler() =>
+        TabSelected.InvokeAsync(View);
+
+    bool IsCurrentTab() =>
+        ViewState.CurrentView == View;
 }

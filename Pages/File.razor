@@ -1,12 +1,12 @@
 ﻿@page "/file"
 
 <section class="section">
-    <h1 class="title">Blazor.LocalFiles - Load File(s)</h1>
+    <h3 class="title is-4">Open one or more files...</h3>
 
-    <FileSelect @ref="multiFileSelect" IsMultiple="true" FilesSelected="FilesSelectedHandler"></FileSelect>
+    <FileSelect @ref="fileSelect" IsMultiple="true" FilesChanged="FilesChangedHandler"></FileSelect>
 
     <div>
-        <button class="button is-primary" @onclick="@SelectFiles">Select Files</button>
+        <button class="button is-primary" @onclick="SelectFiles">Select Files</button>
     </div>
     @if (errorMessage != null)
     {
@@ -52,7 +52,7 @@
 
 @code
 {
-    FileSelect multiFileSelect;
+    FileSelect fileSelect;
 
     LoadFile[] loadFiles;
 
@@ -63,13 +63,13 @@
         ResetErrorState();
 
         // Trigger the file selection dialog
-        multiFileSelect.SelectFiles();
+        fileSelect.SelectFiles();
     }
 
-    Task FilesSelectedHandler(SelectedFile[] selectedFiles)
+    Task FilesChangedHandler(FileSelectChangeArgs args)
     {
         // Store the loaded state about each file (files are lazy loaded into .NET process on demand)
-        loadFiles = selectedFiles.Select(file => new LoadFile()
+        loadFiles = args.Files.Select(file => new LoadFile()
         {
             SelectedFile = file,
             IsLoaded = false,
@@ -83,13 +83,14 @@
     {
         try
         {
-            using (var fileStream = await multiFileSelect.OpenFileStreamAsync(file.SelectedFile.Name))
+            using (var fileStream = await fileSelect.OpenFileStreamAsync(file.SelectedFile.Name))
             {
                 var buffer = new System.IO.MemoryStream();
                 await fileStream.CopyToAsync(buffer);
                 file.IsLoaded = true;
                 file.LoadedSize = (int)buffer.Length;
             }
+            await Task.CompletedTask;
         }
         catch (Exception ex)
         {
