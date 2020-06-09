@@ -1,0 +1,142 @@
+﻿@page "/csv"
+
+<section class="section">
+    <div class="columns">
+        <div class="column is-8">
+            <h3 class="title is-4">Parse a CSV file...</h3>
+        </div>
+        <div class="column is-4">
+            <p><a href="https://github.com/jburman/BlazorLocalFilesExample/blob/master/Pages/CsvFile.razor" target="_blank">View Source on GitHub <i class="oi oi-external-link"></i></a></p>
+            <p>Uses <a href="https://github.com/stevehansen/csv" target="_blank">Csv nuget package <i class="oi oi-external-link"></i></a></p>
+        </div>
+    </div>
+
+    <FileSelect @ref="fileSelect" FilesChanged="FilesChangedHandler" Accept=".csv"></FileSelect>
+    <div>
+        <button class="button is-primary" @onclick="SelectFiles">Select Files</button>
+        <label class="checkbox" style="padding-left: 20px;">
+            <input type="checkbox" checked @bind-value="hasHeaders" /> CSV has headers
+        </label>
+    </div>
+    @if (errorMessage != null)
+    {
+        <hr />
+        <section class="notification is-warning">
+            <button class="delete" @onclick="@CloseErrorAlert"></button>
+            @errorMessage
+        </section>
+    }
+
+    @if (loading)
+    {
+        <hr />
+        <div class="message is-info">
+            <div class="message-header">Loading</div>
+            <div class="message-body">Parsing file...</div>
+        </div>
+    }
+    else
+    {
+        if (tableData.Count > 0)
+        {
+            <hr />
+            <p><strong>Note:</strong> all columns are treated as strings in this example.</p>
+            <DataTable ReadData="ReadCsvData" TEntity="string[]" PageSize="@pageSize" PaginatorStyle="PaginatorStyle.Simple">
+                @for (int i = 0; i < columns.Length; i++)
+                {
+                    <DataCol Title="@columns[i]"
+                        Index="@i"
+                        TEntity="string[]"
+                        TProp="string"
+                        Sortable="true" />
+                }
+            </DataTable>
+        }
+    }
+</section>
+
+@code
+{
+    FileSelect fileSelect;
+    bool loading = false;
+
+    bool hasHeaders = true;
+    string[] columns = null;
+
+    int pageSize = 10;
+
+    List<string[]> tableData = new List<string[]>();
+
+    string errorMessage;
+
+    void SelectFiles()
+    {
+        ResetErrorState();
+
+        // Trigger the file selection dialog
+        fileSelect.SelectFiles();
+    }
+
+    async Task FilesChangedHandler(FileSelectChangeArgs args)
+    {
+        columns = null;
+        tableData.Clear();
+        loading = true;
+
+        try
+        {
+            // Open the first file selected
+            using (var file = await args.FileSelect.OpenFileStreamAsync(args.Files.First().Name))
+            {
+                var fileStream =
+                    Csv.CsvReader.ReadFromStreamAsync(file,
+                    new Csv.CsvOptions()
+                    {
+                        HeaderMode = hasHeaders ? Csv.HeaderMode.HeaderPresent : Csv.HeaderMode.HeaderAbsent
+                    });
+
+                await foreach (var line in fileStream)
+                {
+                    if (columns is null)
+                    {
+                        if (hasHeaders)
+                            columns = line.Headers;
+                        else
+                            columns = Enumerable.Range(1, line.ColumnCount).Select(i => "Col" + i).ToArray();
+                    }
+                    tableData.Add(line.Values);
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    public Task<ReadDataResponse<string[]>> ReadCsvData(ReadDataRequest<string[]> request)
+    {
+        var totalRecords = tableData.Count;
+
+        return
+            Task.FromResult(
+                request.CreateResponse(
+                request.ApplySortsAndPaging(tableData)
+                    .ToList(),
+                totalRecords));
+    }
+
+    void CloseErrorAlert()
+    {
+        ResetErrorState();
+    }
+
+    void ResetErrorState()
+    {
+        errorMessage = null;
+    }
+}

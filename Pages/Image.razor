@@ -1,43 +1,50 @@
 ﻿@page "/image"
 
-<section class="section">
-    <h3 class="title is-4">Blazor.LocalFiles - Load Image</h3>
-
-    <FileSelect @ref="imageFileSelect" Accept=".jpg,.jpeg,.png" FilesSelected="ImageFileSelectedHandler"></FileSelect>
-
-    <div>
-        <button class="button is-primary" @onclick="@SelectImageFile">Select Image</button>
-    </div>
-    @if (errorMessage != null)
-    {
-
-        <section class="notification is-warning">
-            <button class="delete" @onclick="@CloseErrorAlert"></button>
-            @errorMessage
-
-        </section>
-    }
-    
-    @if (imageFileUrl != null)
-    {
-        <hr />
-        <div>
-            <div style="margin: 10px;">
-                <img src="@imageFileUrl" style="width: 400px;" />
+    <section class="section">
+        <div class="columns">
+            <div class="column is-8">
+                <h3 class="title is-4">Load an image...</h3>
             </div>
-            <div>
-                <h5>Load the image data into .NET</h5>
-                <button class="button is-primary" @onclick="@LoadSelectedImageFile">Load Image</button>
-            </div>
-            <div>
-                Is Loaded: @imageFile.IsLoaded
-            </div>
-            <div>
-                Loaded Size: @imageFile.LoadedSize
+            <div class="column is-4">
+                <a href="https://github.com/jburman/BlazorLocalFilesExample/blob/master/Pages/Image.razor" target="_blank">View Source on GitHub <i class="oi oi-external-link"></i></a>
             </div>
         </div>
-    }
-</section>
+
+        <FileSelect @ref="imageFileSelect" Accept=".jpg,.jpeg,.png" FilesSelected="ImageFileSelectedHandler"></FileSelect>
+
+        <div>
+            <button class="button is-primary" @onclick="@SelectImageFile">Select Image</button>
+        </div>
+        @if (errorMessage != null)
+        {
+
+            <section class="notification is-warning">
+                <button class="delete" @onclick="@CloseErrorAlert"></button>
+                @errorMessage
+
+            </section>
+        }
+
+        @if (imageFileUrl != null)
+        {
+            <hr />
+            <div>
+                <div style="margin: 10px;">
+                    <img src="@imageFileUrl" style="width: 400px;" />
+                </div>
+                <div>
+                    <h5>Load the image data into .NET</h5>
+                    <button class="button is-primary" @onclick="@LoadSelectedImageFile">Load Image</button>
+                </div>
+                <div>
+                    Is Loaded: @imageFile.IsLoaded
+                </div>
+                <div>
+                    Loaded Size: @imageFile.LoadedSize
+                </div>
+            </div>
+        }
+    </section>
 
 @code
 {

@@ -1,55 +1,62 @@
 ﻿@page "/filelist"
 
-<section class="section">
-    <h3 class="title is-4">Blazor.LocalFiles - File Select List</h3>
+    <section class="section">
+        <div class="columns">
+            <div class="column is-8">
+                <h3 class="title is-4">Build a file list...</h3>
+            </div>
+            <div class="column is-4">
+                <a href="https://github.com/jburman/BlazorLocalFilesExample/blob/master/Pages/FileList.razor" target="_blank">View Source on GitHub <i class="oi oi-external-link"></i></a>
+            </div>
+        </div>
 
-    <FileSelectList @ref="fileSelectList" IsMultiple="true" FilesSelected="FilesSelectedHandler"></FileSelectList>
+        <FileSelectList @ref="fileSelectList" IsMultiple="true" FilesSelected="FilesSelectedHandler"></FileSelectList>
 
-    <div>
-        <button class="button is-primary" @onclick="@SelectFiles">Select Files</button>
-    </div>
-    @if (errorMessage != null)
-    {
-        <section class="notification is-warning">
-            <button class="delete" @onclick="@CloseErrorAlert"></button>
-            @errorMessage
-        </section>
-    }
+        <div>
+            <button class="button is-primary" @onclick="@SelectFiles">Select Files</button>
+        </div>
+        @if (errorMessage != null)
+        {
+            <section class="notification is-warning">
+                <button class="delete" @onclick="@CloseErrorAlert"></button>
+                @errorMessage
+            </section>
+        }
 
-    @if (fileSelectList?.HasSelectedFiles == true)
-    {
-        <hr />
-        <table class="table is-fullwidth">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Last Modified</th>
-                    <th>Size</th>
-                    <th>Is Loaded</th>
-                    <th>Loaded Size</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var selectedFile in fileSelectList.SelectedFiles)
-                {
-                    var fileLoad = loadFiles[selectedFile.Name];
+        @if (fileSelectList?.HasSelectedFiles == true)
+        {
+            <hr />
+            <table class="table is-fullwidth">
+                <thead>
                     <tr>
-                        <td>@selectedFile.Name</td>
-                        <td>@selectedFile.LastModified.ToLocalTime()</td>
-                        <td>@selectedFile.Size</td>
-                        <td>@fileLoad.IsLoaded</td>
-                        <td>@fileLoad.LoadedSize</td>
-                        <td>
-                            <button class="button is-primary" @onclick="@(async () => await LoadFile(fileLoad))">Load File</button>
-                            <button class="button is-danger is-outlined" @onclick="@(() => RemoveFile(selectedFile.Name))">Remove File</button>
-                        </td>
+                        <th>Name</th>
+                        <th>Last Modified</th>
+                        <th>Size</th>
+                        <th>Is Loaded</th>
+                        <th>Loaded Size</th>
+                        <th></th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    }
-</section>
+                </thead>
+                <tbody>
+                    @foreach (var selectedFile in fileSelectList.SelectedFiles)
+                    {
+                        var fileLoad = loadFiles[selectedFile.Name];
+                        <tr>
+                            <td>@selectedFile.Name</td>
+                            <td>@selectedFile.LastModified.ToLocalTime()</td>
+                            <td>@selectedFile.Size</td>
+                            <td>@fileLoad.IsLoaded</td>
+                            <td>@fileLoad.LoadedSize</td>
+                            <td>
+                                <button class="button is-primary" @onclick="@(async () => await LoadFile(fileLoad))">Load File</button>
+                                <button class="button is-danger is-outlined" @onclick="@(() => RemoveFile(selectedFile.Name))">Remove File</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
 @code
 {
     FileSelectList fileSelectList;

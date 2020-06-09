@@ -1,8 +1,15 @@
 ﻿@page "/file"
 
 <section class="section">
-    <h3 class="title is-4">Open one or more files...</h3>
-
+    <div class="columns">
+        <div class="column is-8">
+            <h3 class="title is-4">Open one or more files...</h3>
+        </div>
+        <div class="column is-4">
+            <a href="https://github.com/jburman/BlazorLocalFilesExample/blob/master/Pages/File.razor" target="_blank">View Source on GitHub <i class="oi oi-external-link"></i></a>
+        </div>
+    </div>
+    
     <FileSelect @ref="fileSelect" IsMultiple="true" FilesChanged="FilesChangedHandler"></FileSelect>
 
     <div>
@@ -14,10 +21,8 @@
         <section class="notification is-warning">
             <button class="delete" @onclick="@CloseErrorAlert"></button>
             @errorMessage
-
         </section>
     }
-
 
     @if (loadFiles != null)
     {
