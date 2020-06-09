@@ -41,7 +41,7 @@
         {
             <hr />
             <p><strong>Note:</strong> all columns are treated as strings in this example.</p>
-            <DataTable ReadData="ReadCsvData" TEntity="string[]" PageSize="@pageSize" PaginatorStyle="PaginatorStyle.Simple">
+            <DataTable ReadData="ReadTableData" TEntity="string[]" PageSize="@pageSize" PaginatorStyle="PaginatorStyle.Simple">
                 @for (int i = 0; i < columns.Length; i++)
                 {
                     <DataCol Title="@columns[i]"
@@ -118,7 +118,7 @@
         }
     }
 
-    public Task<ReadDataResponse<string[]>> ReadCsvData(ReadDataRequest<string[]> request)
+    public Task<ReadDataResponse<string[]>> ReadTableData(ReadDataRequest<string[]> request)
     {
         var totalRecords = tableData.Count;
 
