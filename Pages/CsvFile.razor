@@ -41,16 +41,19 @@
         {
             <hr />
             <p><strong>Note:</strong> all columns are treated as strings in this example.</p>
-            <DataTable ReadData="ReadTableData" TEntity="string[]" PageSize="@pageSize" PaginatorStyle="PaginatorStyle.Simple">
-                @for (int i = 0; i < columns.Length; i++)
-                {
-                    <DataCol Title="@columns[i]"
-                        Index="@i"
-                        TEntity="string[]"
-                        TProp="string"
-                        Sortable="true" />
-                }
-            </DataTable>
+            <div style="overflow: hidden; padding-bottom: 10px; padding-right: 5px;">
+                <DataTable ReadData="ReadTableData" TEntity="string[]" PageSize="@pageSize" PaginatorStyle="PaginatorStyle.Simple">
+                    @for (int i = 0; i < columns.Length; i++)
+                    {
+                        <DataCol Title="@columns[i]"
+                            Index="@i"
+                            TEntity="string[]"
+                            TProp="string"
+                            Sortable="true"
+                            Width="10em" />
+                    }
+                </DataTable>
+            </div>
         }
     }
 </section>
